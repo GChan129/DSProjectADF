@@ -1,0 +1,9 @@
+{
+	"name": "ADFDSProject2",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "edc443c7-67aa-4618-a535-abe3e139da36",
+		"tenantId": "d285a0a5-4bbb-4fdb-b0cd-beb32bb9c1c2"
+	}
+}
