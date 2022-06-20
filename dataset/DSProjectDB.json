@@ -1,0 +1,12 @@
+{
+	"name": "DSProjectDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DSProjectDB_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
