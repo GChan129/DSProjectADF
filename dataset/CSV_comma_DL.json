@@ -1,0 +1,25 @@
+{
+	"name": "CSV_comma_DL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@concat(substring(utcnow(),1 ,4 ),\n'/',\nsubstring(utcnow(),6 ,7 ),\n'/',\nsubstring(utcnow(),9 ,10 )\n)",
+					"type": "Expression"
+				},
+				"fileSystem": "datalake"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
