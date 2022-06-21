@@ -7,10 +7,48 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "Year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CountryCode",
+				"type": "varchar"
+			},
+			{
+				"name": "TaxType",
+				"type": "varchar"
+			},
+			{
+				"name": "Status",
+				"type": "varchar"
+			},
+			{
+				"name": "TaxRate",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxBracketStartAmount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TaxBracketEndAmount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CreatedAt",
+				"type": "datetime2",
+				"scale": 7
+			}
+		],
 		"typeProperties": {
 			"schema": "Staging",
-			"table": "Test"
+			"table": "FEDERAL INCOME TAX 2022"
 		}
 	}
 }
