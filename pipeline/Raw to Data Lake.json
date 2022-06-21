@@ -113,7 +113,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "CSV_DL",
+									"referenceName": "CSV_comma_DL",
 									"type": "DatasetReference"
 								}
 							]
