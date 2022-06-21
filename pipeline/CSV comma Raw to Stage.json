@@ -158,10 +158,11 @@
 									}
 								},
 								"sink": {
-									"type": "SqlServerSink",
+									"type": "AzureSqlSink",
 									"writeBehavior": "insert",
 									"sqlWriterUseTableLock": false,
-									"tableOption": "autoCreate"
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
 								},
 								"enableStaging": false,
 								"translator": {
@@ -181,7 +182,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "SqlServerTable",
+									"referenceName": "DSProjectDB",
 									"type": "DatasetReference"
 								}
 							]
