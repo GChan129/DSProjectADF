@@ -1,5 +1,5 @@
 {
-	"name": "Raw to Data Lake",
+	"name": "CSV comma Raw to Stage",
 	"properties": {
 		"activities": [
 			{
@@ -47,7 +47,7 @@
 					},
 					"activities": [
 						{
-							"name": "Raw to DataLake",
+							"name": "CSV Raw to DataLake",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -114,6 +114,84 @@
 							"outputs": [
 								{
 									"referenceName": "CSV_comma_DL",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "CSV DataLake to Stage",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "CSV Raw to DataLake",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"additionalColumns": [
+										{
+											"name": "CreatedAt",
+											"value": {
+												"value": "@utcnow()",
+												"type": "Expression"
+											}
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"wildcardFolderPath": {
+											"value": "@concat(substring(utcnow(),0 ,4 ),\n'/',\nsubstring(utcnow(),5 ,2 ),\n'/',\nsubstring(utcnow(),8 ,2 )\n)",
+											"type": "Expression"
+										},
+										"wildcardFileName": {
+											"value": "@item().Filename",
+											"type": "Expression"
+										},
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "CSV_comma_DL",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DSProjectDB",
 									"type": "DatasetReference"
 								}
 							]
