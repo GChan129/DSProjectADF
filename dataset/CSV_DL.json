@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"folderPath": {
-					"value": "@concat(formatdatetime(utcnow(), 'yyyyy'),\r\n'/',\r\nformatdatetime(utcnow(), 'mm'),\r\n'/',\r\nformatdatetime(utcnow(), 'dd')\r\n)",
+					"value": "@utcnow()",
 					"type": "Expression"
 				},
 				"fileSystem": "datalake"
