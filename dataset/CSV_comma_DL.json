@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"folderPath": {
-					"value": "@concat(substring(utcnow(),1 ,4 ),\n'/',\nsubstring(utcnow(),6 ,7 ),\n'/',\nsubstring(utcnow(),9 ,10 )\n)",
+					"value": "@concat(substring(utcnow(),0 ,4 ),\n'/',\nsubstring(utcnow(),5 ,2 ),\n'/',\nsubstring(utcnow(),8 ,2 )\n)",
 					"type": "Expression"
 				},
 				"fileSystem": "datalake"
