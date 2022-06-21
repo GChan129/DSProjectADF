@@ -27,8 +27,13 @@
 							}
 						],
 						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
+							"type": "AzureBlobFSReadSettings",
 							"recursive": true,
+							"wildcardFolderPath": {
+								"value": "@concat(substring(utcnow(),0 ,4 ),\n'/',\nsubstring(utcnow(),5 ,2 ),\n'/',\nsubstring(utcnow(),8 ,2 )\n)",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -36,15 +41,11 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -58,13 +59,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "CSV",
+						"referenceName": "CSV_comma_DL",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "CSV_DL",
+						"referenceName": "DSProjectDB",
 						"type": "DatasetReference"
 					}
 				]
