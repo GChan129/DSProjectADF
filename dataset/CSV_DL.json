@@ -1,0 +1,25 @@
+{
+	"name": "CSV_DL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@concat(formatdatetime(utcnow(), 'yyyyy'),\r\n'/',\r\nformatdatetime(utcnow(), 'mm'),\r\n'/',\r\nformatdatetime(utcnow(), 'dd')\r\n)",
+					"type": "Expression"
+				},
+				"fileSystem": "datalake"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
