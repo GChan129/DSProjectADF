@@ -157,7 +157,7 @@
 											"type": "Expression"
 										},
 										"wildcardFileName": {
-											"value": "@item().Filename",
+											"value": "@concat(substring(item().Filename,0,sub(length(item().Filename),3)),'csv')",
 											"type": "Expression"
 										},
 										"enablePartitionDiscovery": false
