@@ -56,7 +56,7 @@
 		],
 		"typeProperties": {
 			"schema": {
-				"value": "@dataset().SchemaName",
+				"value": "Stage",
 				"type": "Expression"
 			},
 			"table": {
