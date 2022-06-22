@@ -71,7 +71,7 @@
 									"type": "ExcelSource",
 									"storeSettings": {
 										"type": "AzureBlobStorageReadSettings",
-										"recursive": true,
+										"recursive": false,
 										"enablePartitionDiscovery": false
 									}
 								},
@@ -114,8 +114,14 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "CSV_comma_DL",
-									"type": "DatasetReference"
+									"referenceName": "CSVcommaDL_ForExcel",
+									"type": "DatasetReference",
+									"parameters": {
+										"FileName": {
+											"value": "@concat(variables('TableName'),'.csv')",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						},
@@ -158,7 +164,7 @@
 											"type": "Expression"
 										},
 										"wildcardFileName": {
-											"value": "@concat(substring(item().Filename,0,sub(length(item().Filename),4)),'csv')",
+											"value": "@concat(variables('TableName'),'.csv')",
 											"type": "Expression"
 										},
 										"enablePartitionDiscovery": false
