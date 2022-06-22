@@ -33,7 +33,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/CSV comma Raw to Stage')]",
+			"name": "[concat(parameters('factoryName'), '/Child_CSVCommaToStage')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -52,13 +52,13 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT FileName FROM [ADF].[RawConfig] WHERE FileType = 'csv'",
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT [FileName] FROM [ADF].[RawConfig]\nWHERE FileType = 'csv'",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "DSProjectDB",
+								"referenceName": "SqlServerTable",
 								"type": "DatasetReference",
 								"parameters": {}
 							},
@@ -82,11 +82,19 @@
 								"value": "@activity('Get List of Filenames').output.value",
 								"type": "Expression"
 							},
+							"isSequential": true,
 							"activities": [
 								{
 									"name": "CSV Raw to DataLake",
 									"type": "Copy",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "Set TableName",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "7.00:00:00",
 										"retry": 0,
@@ -155,7 +163,7 @@
 										{
 											"activity": "Truncate Table",
 											"dependencyConditions": [
-												"Succeeded"
+												"Completed"
 											]
 										}
 									],
@@ -222,9 +230,15 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "DSProjectDB",
+											"referenceName": "GenericTable",
 											"type": "DatasetReference",
-											"parameters": {}
+											"parameters": {
+												"SchemaName": "Staging",
+												"TableName": {
+													"value": "@variables('TableName')",
+													"type": "Expression"
+												}
+											}
 										}
 									]
 								},
@@ -253,9 +267,9 @@
 											"SchemaName": {
 												"value": "Staging"
 											},
-											"FileName": {
+											"TableName": {
 												"value": {
-													"value": "@item().FileName",
+													"value": "@variables('TableName')",
 													"type": "Expression"
 												}
 											}
@@ -264,6 +278,19 @@
 									"linkedServiceName": {
 										"referenceName": "DSProjectDB_ls",
 										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Set TableName",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "TableName",
+										"value": {
+											"value": "@substring(item().Filename,0,sub(length(item().Filename),4))",
+											"type": "Expression"
+										}
 									}
 								}
 							]
@@ -274,12 +301,18 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"variables": {
+					"TableName": {
+						"type": "String"
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DSProjectDB')]",
+				"[concat(variables('factoryId'), '/datasets/SqlServerTable')]",
 				"[concat(variables('factoryId'), '/datasets/CSV')]",
 				"[concat(variables('factoryId'), '/datasets/CSV_comma_DL')]",
+				"[concat(variables('factoryId'), '/datasets/GenericTable')]",
 				"[concat(variables('factoryId'), '/linkedServices/DSProjectDB_ls')]"
 			]
 		},
@@ -312,13 +345,21 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DSProjectDB')]",
+			"name": "[concat(parameters('factoryName'), '/GenericTable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "DSProjectDB_ls",
 					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string"
+					},
+					"TableName": {
+						"type": "string"
+					}
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -362,8 +403,14 @@
 					}
 				],
 				"typeProperties": {
-					"schema": "Staging",
-					"table": "FEDERAL INCOME TAX 2022"
+					"schema": {
+						"value": "Stage",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
 				}
 			},
 			"dependsOn": [
@@ -443,99 +490,6 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Child Raw to Stage')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Raw to DataLake",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"additionalColumns": [
-									{
-										"name": "CreatedAt",
-										"value": {
-											"value": "@utcnow()",
-											"type": "Expression"
-										}
-									}
-								],
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@concat(substring(utcnow(),0 ,4 ),\n'/',\nsubstring(utcnow(),5 ,2 ),\n'/',\nsubstring(utcnow(),8 ,2 )\n)",
-										"type": "Expression"
-									},
-									"wildcardFileName": "*",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CSV_comma_DL",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DSProjectDB",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"FileName": {
-						"type": "string"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/CSV_comma_DL')]",
-				"[concat(variables('factoryId'), '/datasets/DSProjectDB')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage')]",
@@ -648,7 +602,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Copy test",
+						"name": "CSV DataLake to Stage",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -662,11 +616,26 @@
 						"typeProperties": {
 							"source": {
 								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "CreatedAt",
+										"value": {
+											"value": "@utcnow()",
+											"type": "Expression"
+										}
+									}
+								],
 								"storeSettings": {
 									"type": "AzureBlobFSReadSettings",
 									"recursive": true,
-									"wildcardFolderPath": "@concat(substring(utcnow(),0 ,4 ), '/', substring(utcnow(),5 ,2 ), '/', substring(utcnow(),8 ,2 ) )",
-									"wildcardFileName": "FEDERAL INCOME TAX 2022.csv",
+									"wildcardFolderPath": {
+										"value": "@concat(substring(utcnow(),0 ,4 ),\n'/',\nsubstring(utcnow(),5 ,2 ),\n'/',\nsubstring(utcnow(),8 ,2 )\n)",
+										"type": "Expression"
+									},
+									"wildcardFileName": {
+										"value": "FederalIncomeTax2022.csv",
+										"type": "Expression"
+									},
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -676,92 +645,13 @@
 							"sink": {
 								"type": "AzureSqlSink",
 								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
+								"sqlWriterUseTableLock": true,
 								"tableOption": "autoCreate",
 								"disableMetricsCollection": false
 							},
 							"enableStaging": false,
 							"translator": {
 								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 1
-										},
-										"sink": {
-											"name": "Year",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 2
-										},
-										"sink": {
-											"name": "CountryCode",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 3
-										},
-										"sink": {
-											"name": "TaxType",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 4
-										},
-										"sink": {
-											"name": "Status",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 5
-										},
-										"sink": {
-											"name": "TaxRate",
-											"type": "Double",
-											"physicalType": "float"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 6
-										},
-										"sink": {
-											"name": "TaxBracketStartAmount",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 7
-										},
-										"sink": {
-											"name": "TaxBracketEndAmount",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									}
-								],
 								"typeConversion": true,
 								"typeConversionSettings": {
 									"allowDataTruncation": true,
@@ -778,11 +668,453 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "DSProjectDB",
+								"referenceName": "GenericTable",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"SchemaName": "Stage",
+									"TableName": {
+										"value": "FederalIncomeTax2022",
+										"type": "Expression"
+									}
+								}
 							}
 						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CSV_comma_DL')]",
+				"[concat(variables('factoryId'), '/datasets/GenericTable')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Child_ExcelToStage')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get List of Filenames",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT [FileName], Value as SheetName, Value2 as Range FROM [ADF].[RawConfig]\nWHERE FileType = 'Excel'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SqlServerTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach Filename",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get List of Filenames",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get List of Filenames').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Excel Raw to DataLake",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Set TableName",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "ExcelSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": false,
+												"enablePartitionDiscovery": false
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".csv"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "Excel",
+											"type": "DatasetReference",
+											"parameters": {
+												"FileName": {
+													"value": "@item().FileName",
+													"type": "Expression"
+												},
+												"SheetName": {
+													"value": "@item().SheetName",
+													"type": "Expression"
+												},
+												"Range": {
+													"value": "@item().Range",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "CSVcommaDL_ForExcel",
+											"type": "DatasetReference",
+											"parameters": {
+												"FileName": {
+													"value": "@concat(variables('TableName'),'.csv')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "CSV DataLake to Stage",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Truncate Table",
+											"dependencyConditions": [
+												"Completed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"additionalColumns": [
+												{
+													"name": "CreatedAt",
+													"value": {
+														"value": "@utcnow()",
+														"type": "Expression"
+													}
+												}
+											],
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@concat(substring(utcnow(),0 ,4 ),\n'/',\nsubstring(utcnow(),5 ,2 ),\n'/',\nsubstring(utcnow(),8 ,2 )\n)",
+													"type": "Expression"
+												},
+												"wildcardFileName": {
+													"value": "@concat(variables('TableName'),'.csv')",
+													"type": "Expression"
+												},
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false,
+											"tableOption": "autoCreate",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "CSV_comma_DL",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "GenericTable",
+											"type": "DatasetReference",
+											"parameters": {
+												"SchemaName": "Staging",
+												"TableName": {
+													"value": "@variables('TableName')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Truncate Table",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Excel Raw to DataLake",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[Staging].[sp_TruncateTable]",
+										"storedProcedureParameters": {
+											"SchemaName": {
+												"value": "Staging"
+											},
+											"TableName": {
+												"value": {
+													"value": "@variables('TableName')",
+													"type": "Expression"
+												}
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "DSProjectDB_ls",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Set TableName",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "TableName",
+										"value": {
+											"value": "@substring(item().Filename,0,sub(length(item().Filename),5))",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SqlServerTable')]",
+				"[concat(variables('factoryId'), '/datasets/Excel')]",
+				"[concat(variables('factoryId'), '/datasets/CSVcommaDL_ForExcel')]",
+				"[concat(variables('factoryId'), '/datasets/CSV_comma_DL')]",
+				"[concat(variables('factoryId'), '/datasets/GenericTable')]",
+				"[concat(variables('factoryId'), '/linkedServices/DSProjectDB_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Excel')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageCSV",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"FileName": {
+						"type": "string"
+					},
+					"SheetName": {
+						"type": "string"
+					},
+					"Range": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": "Excel",
+						"container": "raw"
+					},
+					"sheetIndex": 0,
+					"range": {
+						"value": "@dataset().Range",
+						"type": "Expression"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageCSV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CSVcommaDL_ForExcel')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"FileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(substring(utcnow(),0 ,4 ),\n'/',\nsubstring(utcnow(),5 ,2 ),\n'/',\nsubstring(utcnow(),8 ,2 )\n)",
+							"type": "Expression"
+						},
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "'"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Master_BlobToStage')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CSV to Stage",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Child_CSVCommaToStage",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Excel to Stage",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Child_ExcelToStage",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"policy": {
@@ -792,8 +1124,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/CSV_comma_DL')]",
-				"[concat(variables('factoryId'), '/datasets/DSProjectDB')]"
+				"[concat(variables('factoryId'), '/pipelines/Child_CSVCommaToStage')]",
+				"[concat(variables('factoryId'), '/pipelines/Child_ExcelToStage')]"
 			]
 		}
 	]
