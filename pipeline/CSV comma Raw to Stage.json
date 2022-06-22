@@ -22,7 +22,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "DSProjectDB",
+						"referenceName": "GenericTable",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
@@ -49,7 +49,14 @@
 						{
 							"name": "CSV Raw to DataLake",
 							"type": "Copy",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "Set TableName",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
@@ -159,9 +166,6 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
-									"writeBehavior": "insert",
-									"sqlWriterUseTableLock": false,
-									"tableOption": "autoCreate",
 									"disableMetricsCollection": false
 								},
 								"enableStaging": false,
@@ -182,8 +186,15 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "DSProjectDB",
-									"type": "DatasetReference"
+									"referenceName": "GenericTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaName": "Stage",
+										"TableName": {
+											"value": "@variables('TableName')",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						},
@@ -214,7 +225,7 @@
 									},
 									"TableName": {
 										"value": {
-											"value": "@substring(item().Filename,0,sub(length(item().Filename),4))",
+											"value": "@variables('TableName')",
 											"type": "Expression"
 										}
 									}
@@ -224,11 +235,29 @@
 								"referenceName": "DSProjectDB_ls",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "Set TableName",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "TableName",
+								"value": {
+									"value": "@substring(item().Filename,0,sub(length(item().Filename),4))",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
 			}
 		],
+		"variables": {
+			"TableName": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
