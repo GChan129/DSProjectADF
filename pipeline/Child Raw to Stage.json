@@ -65,7 +65,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DSProjectDB",
+						"referenceName": "GenericTable",
 						"type": "DatasetReference"
 					}
 				]
@@ -74,6 +74,11 @@
 		"parameters": {
 			"FileName": {
 				"type": "string"
+			}
+		},
+		"variables": {
+			"TableName": {
+				"type": "String"
 			}
 		},
 		"annotations": []
