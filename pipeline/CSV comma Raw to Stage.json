@@ -212,7 +212,7 @@
 									"SchemaName": {
 										"value": "Staging"
 									},
-									"FileName": {
+									"TableName": {
 										"value": {
 											"value": "@item().FileName",
 											"type": "Expression"
