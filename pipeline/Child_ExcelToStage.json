@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT [FileName] FROM [ADF].[RawConfig]\nWHERE FileType = 'csv'",
+						"sqlReaderQuery": "SELECT [FileName] FROM [ADF].[RawConfig]\nWHERE FileType = 'Excel'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -48,7 +48,7 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "CSV Raw to DataLake",
+							"name": "Excel Raw to DataLake",
 							"type": "Copy",
 							"dependsOn": [
 								{
@@ -68,19 +68,11 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "DelimitedTextSource",
+									"type": "ExcelSource",
 									"storeSettings": {
 										"type": "AzureBlobStorageReadSettings",
 										"recursive": true,
-										"wildcardFolderPath": "CSVs",
-										"wildcardFileName": {
-											"value": "@item().Filename",
-											"type": "Expression"
-										},
 										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "DelimitedTextReadSettings"
 									}
 								},
 								"sink": {
@@ -106,8 +98,14 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "CSV",
-									"type": "DatasetReference"
+									"referenceName": "Excel",
+									"type": "DatasetReference",
+									"parameters": {
+										"FileName": {
+											"value": "@item().FileName",
+											"type": "Expression"
+										}
+									}
 								}
 							],
 							"outputs": [
@@ -207,7 +205,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "CSV Raw to DataLake",
+									"activity": "Excel Raw to DataLake",
 									"dependencyConditions": [
 										"Succeeded"
 									]

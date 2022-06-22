@@ -1,0 +1,29 @@
+{
+	"name": "Excel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageCSV",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": "Excel",
+				"container": "raw"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}
