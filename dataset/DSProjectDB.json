@@ -45,10 +45,6 @@
 				"type": "datetime2",
 				"scale": 7
 			}
-		],
-		"typeProperties": {
-			"schema": "Staging",
-			"table": "Cost_of_living_index"
-		}
+		]
 	}
 }
