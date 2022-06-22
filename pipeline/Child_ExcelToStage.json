@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT [FileName], Value as SheetName FROM [ADF].[RawConfig]\nWHERE FileType = 'Excel'",
+						"sqlReaderQuery": "SELECT [FileName], Value as SheetName, Value2 as Range FROM [ADF].[RawConfig]\nWHERE FileType = 'Excel'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -107,6 +107,10 @@
 										},
 										"SheetName": {
 											"value": "@item().SheetName",
+											"type": "Expression"
+										},
+										"Range": {
+											"value": "@item().Range",
 											"type": "Expression"
 										}
 									}

@@ -11,15 +11,14 @@
 			},
 			"SheetName": {
 				"type": "string"
+			},
+			"Range": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
-			"sheetName": {
-				"value": "@dataset().SheetName",
-				"type": "Expression"
-			},
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
@@ -28,6 +27,11 @@
 				},
 				"folderPath": "Excel",
 				"container": "raw"
+			},
+			"sheetIndex": 0,
+			"range": {
+				"value": "@dataset().Range",
+				"type": "Expression"
 			},
 			"firstRowAsHeader": true
 		},
