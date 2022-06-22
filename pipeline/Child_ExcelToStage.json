@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT [FileName] FROM [ADF].[RawConfig]\nWHERE FileType = 'Excel'",
+						"sqlReaderQuery": "SELECT [FileName], Value as SheetName FROM [ADF].[RawConfig]\nWHERE FileType = 'Excel'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -53,6 +53,12 @@
 							"dependsOn": [
 								{
 									"activity": "Set TableName",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Return SheetName",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -103,6 +109,10 @@
 									"parameters": {
 										"FileName": {
 											"value": "@item().FileName",
+											"type": "Expression"
+										},
+										"SheetName": {
+											"value": "@activity('Return SheetName').output",
 											"type": "Expression"
 										}
 									}
@@ -249,6 +259,35 @@
 									"value": "@substring(item().Filename,0,sub(length(item().Filename),4))",
 									"type": "Expression"
 								}
+							}
+						},
+						{
+							"name": "Return SheetName",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[Staging].[sp_ReturnExcelSheetName]",
+								"storedProcedureParameters": {
+									"FileName": {
+										"value": {
+											"value": "@item().value",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "DSProjectDB_ls",
+								"type": "LinkedServiceReference"
 							}
 						}
 					]
