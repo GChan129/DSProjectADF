@@ -116,7 +116,7 @@
 								{
 									"activity": "Truncate Table",
 									"dependencyConditions": [
-										"Succeeded"
+										"Completed"
 									]
 								}
 							],
@@ -214,7 +214,7 @@
 									},
 									"TableName": {
 										"value": {
-											"value": "@item().FileName",
+											"value": "@substring(item().Filename,0,sub(length(item().Filename),4))",
 											"type": "Expression"
 										}
 									}

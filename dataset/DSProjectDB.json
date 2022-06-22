@@ -48,7 +48,7 @@
 		],
 		"typeProperties": {
 			"schema": "Staging",
-			"table": "FEDERAL INCOME TAX 2022"
+			"table": "Cost_of_living_index"
 		}
 	}
 }
