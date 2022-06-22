@@ -11,6 +11,15 @@
 		"DSProjectDB_ls_connectionString": {
 			"value": ""
 		},
+		"AzureDataLakeStorage_accountKey": {
+			"value": ""
+		},
+		"SqlServer_ls_connectionString": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_properties_typeProperties_url": {
+			"value": "https://dsproject.dfs.core.windows.net/"
+		},
 		"containerUri": {
 			"value": ""
 		},
