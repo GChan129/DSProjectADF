@@ -201,7 +201,7 @@
 									"referenceName": "GenericTable",
 									"type": "DatasetReference",
 									"parameters": {
-										"SchemaName": "Stage",
+										"SchemaName": "Staging",
 										"TableName": {
 											"value": "@variables('TableName')",
 											"type": "Expression"
