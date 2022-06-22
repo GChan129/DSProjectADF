@@ -8,6 +8,9 @@
 		"parameters": {
 			"FileName": {
 				"type": "string"
+			},
+			"SheetName": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -21,6 +24,10 @@
 				},
 				"folderPath": "Excel",
 				"container": "raw"
+			},
+			"range": {
+				"value": "@dataset().SheetName",
+				"type": "Expression"
 			},
 			"firstRowAsHeader": true
 		},
