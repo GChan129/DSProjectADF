@@ -46,7 +46,7 @@
 					"sink": {
 						"type": "AzureSqlSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
+						"sqlWriterUseTableLock": true,
 						"tableOption": "autoCreate",
 						"disableMetricsCollection": false
 					},
@@ -81,6 +81,11 @@
 				]
 			}
 		],
+		"parameters": {
+			"TableName": {
+				"type": "string"
+			}
+		},
 		"variables": {
 			"TableName": {
 				"type": "String"
