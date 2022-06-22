@@ -16,13 +16,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT FileName FROM [ADF].[RawConfig] WHERE FileType = 'csv'",
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT [FileName] FROM [ADF].[RawConfig]\nWHERE FileType = 'csv'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "GenericTable",
+						"referenceName": "SqlServerTable",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
