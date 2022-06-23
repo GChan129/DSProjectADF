@@ -49,11 +49,6 @@
 				]
 			}
 		],
-		"parameters": {
-			"TableName": {
-				"type": "string"
-			}
-		},
 		"variables": {
 			"TableName": {
 				"type": "String"
