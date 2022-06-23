@@ -7,7 +7,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "ExchangeRates API to Raw",
+						"activity": "ExchangeRates API to JSON Raw",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1615,7 +1615,7 @@
 				}
 			},
 			{
-				"name": "ExchangeRates API to Raw",
+				"name": "ExchangeRates API to JSON Raw",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
