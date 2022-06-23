@@ -1,0 +1,28 @@
+{
+	"name": "JsonAPI",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HttpServerFX",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"StartDate": {
+				"type": "string",
+				"defaultValue": "2022-06-23"
+			},
+			"EndFate": {
+				"type": "string",
+				"defaultValue": "2022-06-23"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "@concat('https://api.apilayer.com/currency_data/change?start_date=',dataset().StartDate,'&end_date=',dataset().EndDate)"
+			}
+		},
+		"schema": {}
+	}
+}
