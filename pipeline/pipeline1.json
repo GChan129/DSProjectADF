@@ -1406,7 +1406,10 @@
 				"outputs": [
 					{
 						"referenceName": "CSVcommaDL_ForJSON",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"FileName": "ExchangeRates"
+						}
 					}
 				]
 			}
