@@ -55,69 +55,6 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Excel Raw to DataLake",
-							"type": "Copy",
-							"dependsOn": [
-								{
-									"activity": "Set TableName",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "JsonSource",
-									"storeSettings": {
-										"type": "AzureBlobStorageReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "JsonReadSettings"
-									}
-								},
-								"sink": {
-									"type": "DelimitedTextSink",
-									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings"
-									},
-									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".csv"
-									}
-								},
-								"enableStaging": false
-							},
-							"inputs": [
-								{
-									"referenceName": "JsonFXBlob",
-									"type": "DatasetReference"
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "CSVcommaDL_ForExcel",
-									"type": "DatasetReference",
-									"parameters": {
-										"FileName": {
-											"value": "@concat(variables('TableName'),'.csv')",
-											"type": "Expression"
-										}
-									}
-								}
-							]
-						},
-						{
 							"name": "CSV DataLake to Stage",
 							"type": "Copy",
 							"dependsOn": [
@@ -207,7 +144,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "Excel Raw to DataLake",
+									"activity": "JSON Raw to CSV DataLake",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -252,6 +189,1427 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "JSON Raw to CSV DataLake",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Set TableName",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings",
+										"copyBehavior": "PreserveHierarchy"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".csv"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['start_date']"
+											},
+											"sink": {
+												"name": "start_date"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDAED']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDAED_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDAFN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDAFN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDALL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDALL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDAMD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDAMD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDANG']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDANG_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDAOA']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDAOA_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDARS']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDARS_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDAUD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDAUD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDAWG']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDAWG_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDAZN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDAZN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBAM']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBAM_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBBD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBBD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBDT']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBDT_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBGN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBGN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBHD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBHD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBIF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBIF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBMD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBMD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBND']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBND_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBOB']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBOB_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBRL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBRL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBSD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBSD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBTC']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBTC_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBTN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBTN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBWP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBWP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBYN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBYN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBYR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBYR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDBZD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDBZD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCAD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCAD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCDF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCDF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCHF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCHF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCLF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCLF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCLP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCLP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCNY']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCNY_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCOP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCOP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCRC']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCRC_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCUC']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCUC_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCUP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCUP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCVE']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCVE_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDCZK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDCZK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDDJF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDDJF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDDKK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDDKK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDDOP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDDOP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDDZD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDDZD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDEGP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDEGP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDERN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDERN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDETB']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDETB_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDEUR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDEUR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDFJD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDFJD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDFKP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDFKP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGBP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGBP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGEL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGEL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGGP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGGP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGHS']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGHS_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGIP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGIP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGMD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGMD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGNF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGNF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGTQ']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGTQ_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDGYD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDGYD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDHKD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDHKD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDHNL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDHNL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDHRK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDHRK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDHTG']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDHTG_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDHUF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDHUF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDIDR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDIDR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDILS']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDILS_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDIMP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDIMP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDINR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDINR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDIQD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDIQD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDIRR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDIRR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDISK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDISK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDJEP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDJEP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDJMD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDJMD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDJOD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDJOD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDJPY']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDJPY_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKES']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKES_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKGS']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKGS_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKHR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKHR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKMF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKMF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKPW']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKPW_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKRW']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKRW_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKWD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKWD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKYD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKYD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDKZT']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDKZT_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDLAK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDLAK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDLBP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDLBP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDLKR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDLKR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDLRD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDLRD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDLSL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDLSL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDLTL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDLTL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDLVL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDLVL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDLYD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDLYD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMAD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMAD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMDL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMDL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMGA']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMGA_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMKD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMKD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMMK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMMK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMNT']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMNT_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMOP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMOP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMRO']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMRO_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMUR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMUR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMVR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMVR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMWK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMWK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMXN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMXN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMYR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMYR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDMZN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDMZN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDNAD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDNAD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDNGN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDNGN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDNIO']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDNIO_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDNOK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDNOK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDNPR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDNPR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDNZD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDNZD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDOMR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDOMR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDPAB']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDPAB_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDPEN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDPEN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDPGK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDPGK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDPHP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDPHP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDPKR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDPKR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDPLN']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDPLN_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDPYG']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDPYG_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDQAR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDQAR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDRON']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDRON_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDRSD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDRSD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDRUB']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDRUB_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDRWF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDRWF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSAR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSAR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSBD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSBD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSCR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSCR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSDG']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSDG_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSEK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSEK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSGD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSGD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSHP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSHP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSLL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSLL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSOS']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSOS_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSRD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSRD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSTD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSTD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSVC']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSVC_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSYP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSYP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDSZL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDSZL_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTHB']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTHB_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTJS']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTJS_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTMT']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTMT_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTND']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTND_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTOP']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTOP_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTRY']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTRY_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTTD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTTD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTWD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTWD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDTZS']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDTZS_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDUAH']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDUAH_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDUGX']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDUGX_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDUSD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDUSD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDUYU']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDUYU_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDUZS']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDUZS_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDVEF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDVEF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDVND']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDVND_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDVUV']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDVUV_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDWST']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDWST_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDXAF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDXAF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDXAG']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDXAG_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDXAU']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDXAU_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDXCD']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDXCD_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDXDR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDXDR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDXOF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDXOF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDXPF']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDXPF_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDYER']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDYER_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDZAR']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDZAR_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDZMK']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDZMK_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDZMW']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDZMW_start_rate"
+											}
+										},
+										{
+											"source": {
+												"path": "$['quotes']['USDZWL']['start_rate']"
+											},
+											"sink": {
+												"name": "quotes_USDZWL_start_rate"
+											}
+										}
+									]
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "JsonFXBlob",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "CSVcommaDL_ForJSON",
+									"type": "DatasetReference",
+									"parameters": {
+										"FileName": {
+											"value": "@variables('TableName')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
 						}
 					]
 				}
