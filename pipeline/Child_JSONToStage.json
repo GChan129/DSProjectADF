@@ -93,7 +93,7 @@
 											"type": "Expression"
 										},
 										"wildcardFileName": {
-											"value": "@concat(variables('TableName'),'.csv')",
+											"value": "@variables('TableName')",
 											"type": "Expression"
 										},
 										"enablePartitionDiscovery": false
