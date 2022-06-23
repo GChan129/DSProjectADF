@@ -1,5 +1,5 @@
 {
-	"name": "JsonBlob",
+	"name": "JsonFXBlob",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "BlobStorageCSV",
@@ -10,6 +10,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat('ExchangeRates',substring(utcnow(),1,10))",
+					"type": "Expression"
+				},
 				"folderPath": "JSON",
 				"container": "raw"
 			}
