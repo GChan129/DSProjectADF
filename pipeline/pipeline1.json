@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CSV DataLake to Stage",
+				"name": "Copy data1",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -16,67 +16,35 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
-						"additionalColumns": [
-							{
-								"name": "CreatedAt",
-								"value": {
-									"value": "@utcnow()",
-									"type": "Expression"
-								}
-							}
-						],
-						"storeSettings": {
-							"type": "AzureBlobFSReadSettings",
-							"recursive": true,
-							"wildcardFolderPath": {
-								"value": "@concat(substring(utcnow(),0 ,4 ),\n'/',\nsubstring(utcnow(),5 ,2 ),\n'/',\nsubstring(utcnow(),8 ,2 )\n)",
-								"type": "Expression"
-							},
-							"wildcardFileName": {
-								"value": "FederalIncomeTax2022.csv",
-								"type": "Expression"
-							},
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"supportRFC5988": "true"
 						}
 					},
 					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": true,
-						"tableOption": "autoCreate",
-						"disableMetricsCollection": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
 						}
-					}
+					},
+					"enableStaging": false
 				},
 				"inputs": [
 					{
-						"referenceName": "CSV_comma_DL",
+						"referenceName": "RestResource",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "GenericTable",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": "Stage",
-							"TableName": {
-								"value": "FederalIncomeTax2022",
-								"type": "Expression"
-							}
-						}
+						"referenceName": "JsonBlob",
+						"type": "DatasetReference"
 					}
 				]
 			}

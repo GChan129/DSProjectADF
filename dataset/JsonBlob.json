@@ -1,0 +1,19 @@
+{
+	"name": "JsonBlob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageCSV",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "JSON",
+				"container": "raw"
+			}
+		},
+		"schema": {}
+	}
+}
