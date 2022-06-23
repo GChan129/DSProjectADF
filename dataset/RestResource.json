@@ -1,25 +1,15 @@
 {
-	"name": "RestResource1",
+	"name": "RestResource",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "RestServiceFX",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"StartDate": {
-				"type": "string",
-				"defaultValue": "2022-06-23"
-			},
-			"EndDate": {
-				"type": "string",
-				"defaultValue": "2022-06-23"
-			}
-		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
 			"relativeUrl": {
-				"value": "@concat('https://api.apilayer.com/currency_data/change?start_date=',dataset().StartDate,'&end_date=',dataset().EndDate)",
+				"value": "change?start_date=2022-06-23&end_date=2022-06-23",
 				"type": "Expression"
 			}
 		},
