@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@concat('ExchangeRates',substring(utcnow(),1,10))",
+					"value": "ExchangeRates",
 					"type": "Expression"
 				},
 				"folderPath": "JSON",
