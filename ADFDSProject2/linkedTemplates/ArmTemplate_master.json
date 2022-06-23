@@ -23,9 +23,33 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SqlServer_ls'"
 		},
+		"RestServiceFX_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestServiceFX'"
+		},
+		"HttpServerFX_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'HttpServerFX'"
+		},
 		"AzureDataLakeStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dsproject.dfs.core.windows.net/"
+		},
+		"RestServiceFX_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.apilayer.com/currency_data"
+		},
+		"RestServiceFX_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "graciechan@gmail.com"
+		},
+		"HttpServerFX_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.apilayer.com/currency_data"
+		},
+		"HttpServerFX_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "graciechan@gmail.com"
 		},
 		"containerUri": {
 			"type": "string",
@@ -66,12 +90,50 @@
 					"SqlServer_ls_connectionString": {
 						"value": "[parameters('SqlServer_ls_connectionString')]"
 					},
+					"RestServiceFX_password": {
+						"value": "[parameters('RestServiceFX_password')]"
+					},
+					"HttpServerFX_password": {
+						"value": "[parameters('HttpServerFX_password')]"
+					},
 					"AzureDataLakeStorage_properties_typeProperties_url": {
 						"value": "[parameters('AzureDataLakeStorage_properties_typeProperties_url')]"
+					},
+					"RestServiceFX_properties_typeProperties_url": {
+						"value": "[parameters('RestServiceFX_properties_typeProperties_url')]"
+					},
+					"RestServiceFX_properties_typeProperties_userName": {
+						"value": "[parameters('RestServiceFX_properties_typeProperties_userName')]"
+					},
+					"HttpServerFX_properties_typeProperties_url": {
+						"value": "[parameters('HttpServerFX_properties_typeProperties_url')]"
+					},
+					"HttpServerFX_properties_typeProperties_userName": {
+						"value": "[parameters('HttpServerFX_properties_typeProperties_userName')]"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "ADFDSProject2_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFDSProject2_ArmTemplate_0')]"
+			]
 		}
 	]
 }

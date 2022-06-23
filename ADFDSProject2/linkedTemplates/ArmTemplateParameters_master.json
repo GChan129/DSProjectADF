@@ -17,8 +17,26 @@
 		"SqlServer_ls_connectionString": {
 			"value": ""
 		},
+		"RestServiceFX_password": {
+			"value": ""
+		},
+		"HttpServerFX_password": {
+			"value": ""
+		},
 		"AzureDataLakeStorage_properties_typeProperties_url": {
 			"value": "https://dsproject.dfs.core.windows.net/"
+		},
+		"RestServiceFX_properties_typeProperties_url": {
+			"value": "https://api.apilayer.com/currency_data"
+		},
+		"RestServiceFX_properties_typeProperties_userName": {
+			"value": "graciechan@gmail.com"
+		},
+		"HttpServerFX_properties_typeProperties_url": {
+			"value": "https://api.apilayer.com/currency_data"
+		},
+		"HttpServerFX_properties_typeProperties_userName": {
+			"value": "graciechan@gmail.com"
 		},
 		"containerUri": {
 			"value": ""
