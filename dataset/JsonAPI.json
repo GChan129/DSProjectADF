@@ -6,11 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"StartDate": {
-				"type": "string",
-				"defaultValue": "2022-06-23"
-			},
-			"EndFate": {
+			"Date": {
 				"type": "string",
 				"defaultValue": "2022-06-23"
 			}
@@ -20,7 +16,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "@concat('https://api.apilayer.com/currency_data/change?start_date=',dataset().StartDate,'&end_date=',dataset().EndDate)"
+				"relativeUrl": {
+					"value": "@concat('https://api.apilayer.com/currency_data/change?start_date=',dataset().Date,'&end_date=',dataset().Date)",
+					"type": "Expression"
+				}
 			}
 		},
 		"schema": {}
